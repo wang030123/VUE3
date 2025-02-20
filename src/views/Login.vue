@@ -50,7 +50,7 @@ const register = async () => {
         alert('注册失败')
     } */
     //alert(result.msg ? result.msg : '注册成功');
-    ElMessage.success(result.msg ? result.msg : '注册成功')
+    ElMessage.success(result.message ? result.message : '注册成功')
 }
 
 //绑定数据,复用注册表单的数据模型
@@ -69,7 +69,7 @@ const login =async ()=>{
     alert('登录失败')
    } */
    //alert(result.msg? result.msg : '登录成功')
-   ElMessage.success(result.msg ? result.msg : '登录成功')
+   ElMessage.success(result.message ? result.message : '登录成功')
    //把得到的token存储到pinia中
    tokenStore.setToken(result.data)
    //跳转到首页 路由完成跳转

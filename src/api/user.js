@@ -1,6 +1,6 @@
 //导入request.js请求工具
 import request from '@/utils/request.js'
-
+import { useTokenStore } from '@/stores/token.js'
 //提供调用注册接口的函数
 export const userRegisterService = (registerData)=>{
     //借助于UrlSearchParams完成传递
@@ -36,4 +36,8 @@ export const userAvatarUpdateService = (avatarUrl)=>{
     const params = new URLSearchParams();
     params.append('avatarUrl',avatarUrl)
     return request.patch('/user/updateAvatar',params)
+}
+
+export const userPasswordUpdateService = (PasswordData)=>{
+    return request.patch('/user/updatePwd',PasswordData,{headers:{'Content-Type': 'application/json'}})
 }

@@ -3,32 +3,38 @@ import { ref } from 'vue'
 import useUserInfoStore from '@/stores/userInfo.js'
 const userInfoStore = useUserInfoStore();
 
-const userInfo = ref({...userInfoStore.info})
+
+const passwordModel = ref({
+    old_pwd:'',
+    new_pwd:'',
+    re_pwd:''
+}
+)
 const rules = {
-    nickname: [
-        { required: true, message: '请输入用户昵称', trigger: 'blur' },
-        {
-            pattern: /^\S{2,10}$/,
-            message: '昵称必须是2-10位的非空字符串',
-            trigger: 'blur'
-        }
+    old_pwd: [
+        { required: true, message: '请输入原密码', trigger: 'blur' },
+        { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur' }
     ],
-    email: [
-        { required: true, message: '请输入用户邮箱', trigger: 'blur' },
-        { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+    new_pwd: [
+        { required: true, message: '请输入新密码', trigger: 'blur' },
+        { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur' }
+    ],
+    re_pwd: [
+        { required: true, message: '请确认新密码', trigger: 'blur' },
+        { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur' }
     ]
 }
 
 //修改个人信息
-import {userInfoUpdateService} from '@/api/user.js'
+import {userPasswordUpdateService} from '@/api/user.js'
 import {ElMessage} from 'element-plus'
-const updateUserInfo = async ()=>{
+const updatePassword = async ()=>{
     //调用接口
-    let result = await userInfoUpdateService(userInfo.value);
+    let result = await userPasswordUpdateService(passwordModel.value);
     ElMessage.success(result.msg? result.msg : '修改成功');
     
     //修改pinia中的个人信息
-    userInfoStore.setInfo(userInfo.value)
+    userInfoStore.setInfo(passwordModel.value)
 }
 </script>
 <template>
@@ -40,18 +46,18 @@ const updateUserInfo = async ()=>{
         </template>
         <el-row>
             <el-col :span="12">
-                <el-form :model="userInfo" :rules="rules" label-width="100px" size="large">
-                    <el-form-item label="原密码">
-                        <el-input v-model="userInfo.username" disabled></el-input>
+                <el-form :model="passwordModel" :rules="rules" label-width="100px" size="large">
+                    <el-form-item label="原密码" prop="old_pwd">
+                        <el-input v-model="passwordModel.old_pwd"  show-password></el-input>
                     </el-form-item>
-                    <el-form-item label="新密码" prop="nickname">
-                        <el-input v-model="userInfo.nickname"></el-input>
+                    <el-form-item label="新密码" prop="new_pwd">
+                        <el-input v-model="passwordModel.new_pwd"  show-password></el-input>
                     </el-form-item>
-                    <el-form-item label="确认新密码" prop="email">
-                        <el-input v-model="userInfo.email"></el-input>
+                    <el-form-item label="确认新密码" prop="re_pwd">
+                        <el-input v-model="passwordModel.re_pwd"  show-password></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="updateUserInfo">提交修改</el-button>
+                        <el-button type="primary" @click="updatePassword">提交修改</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
