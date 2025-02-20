@@ -11,6 +11,7 @@ export const articleCategoryListService = ()=>{
 //文章分类添加
 export const articleCategoryAddService = (categoryData)=>{
     return request.post('/category',categoryData)
+
 }
 
 //文章分类修改
