@@ -10,6 +10,7 @@ const passwordModel = ref({
     re_pwd:''
 }
 )
+
 const rules = {
     old_pwd: [
         { required: true, message: '请输入原密码', trigger: 'blur' },
@@ -28,6 +29,8 @@ const rules = {
 //修改个人信息
 import {userPasswordUpdateService} from '@/api/user.js'
 import {ElMessage} from 'element-plus'
+import {useRouter} from 'vue-router'
+const router = useRouter()
 const updatePassword = async ()=>{
     //调用接口
     let result = await userPasswordUpdateService(passwordModel.value);
@@ -35,6 +38,7 @@ const updatePassword = async ()=>{
     
     //修改pinia中的个人信息
     userInfoStore.setInfo(passwordModel.value)
+    router.push('/user/login')
 }
 </script>
 <template>
