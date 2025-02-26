@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 //导入组件
 import LoginVue from '@/views/Login.vue'
+import RegisterVue from '@/views/Register.vue'
 import LayoutVue from '@/views/Layout.vue'
 
 import ArticleCategoryVue from '@/views/article/ArticleCategory.vue'
@@ -11,9 +12,11 @@ import UserInfoVue from '@/views/user/UserInfo.vue'
 import UserResetPasswordVue from '@/views/user/UserResetPassword.vue'
 import UserForgetPasswordVue from '@/views/forgetPassword.vue'
 
+
 //定义路由关系
 const routes = [
     { path: '/login', component: LoginVue },
+    { path: '/user/register', component: RegisterVue },
     { path: '/user/forgetPassword', component: UserForgetPasswordVue },
     {
         path: '/', component: LayoutVue,redirect:'/article/manage', children: [

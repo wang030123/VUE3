@@ -1,13 +1,25 @@
 <script setup>
-import { User, Lock } from '@element-plus/icons-vue'
+import { User, Lock,Message } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 //定义数据模型
 const registerData = ref({
     username: '',
-    password: ''
+    password: '',
+    email:'',
+    nickname:''
 })
 
+//定义邮箱校验规则
+const checkEmail = (rule, value, callback) => {
+    const regEmail = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+    if (value === '') {
+        callback(new Error("邮箱不可为空"))
+    } else if (regEmail.test(value)) {
+        return callback();
+    }
+    callback(new Error("请输入合法的邮箱"));
+}
 //定义表单校验规则
 const rules = {
     username: [
@@ -17,34 +29,31 @@ const rules = {
     password: [
         { required: true, message: '请输入密码', trigger: 'blur' },
         { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur' }
+    ],
+    nickname: [
+        { required: true, message: '请输入昵称', trigger: 'blur' },
+        { min: 1, max: 8, message: '长度为1~8位非空字符', trigger: 'blur' }
+    ],
+    email: [
+        {required: true, message: '请输入邮箱', trigger: 'blur' },
+        {validator:checkEmail,trigger:'blur'}
     ]
 }
 
 import {useRouter} from 'vue-router'
 const router = useRouter()
-//绑定数据,复用注册表单的数据模型
-//表单数据校验
-//登录函数
-import {useTokenStore} from '@/stores/token.js'
-const tokenStore = useTokenStore();
-import { userLoginService} from '@/api/user.js'
-const login =async ()=>{
-    //调用接口,完成登录
-   let result =  await userLoginService(registerData.value);
-   ElMessage.success(result.data.message ? result.data.message : '登录成功')
-   //把得到的token存储到pinia中
-   tokenStore.setToken(result.data)
-   //跳转到首页 路由完成跳转
-   router.push('/')
+//调用后台接口,完成注册
+import { userRegisterService} from '@/api/user.js'
+const register = async () => {
+    let result = await userRegisterService(registerData.value);
+    ElMessage.success(result.message ? result.message : '注册成功')
+    router.push("/login")
 }
-const forgetPassword = ()=>{
-   router.push('/user/forgetPassword')
+const Backlogin = async () => {
+    router.push("/login")
 }
 
-//定义函数,清空数据模型的数据
-const Register = ()=>{
-    router.push('/user/register')
-}
+
 </script>
 
 <template>
@@ -53,27 +62,34 @@ const Register = ()=>{
         <el-col :span="6" :offset="3" class="form">
             <el-form ref="form" size="large" autocomplete="off" :model="registerData" :rules="rules">
                 <el-form-item>
-                    <h1>登录</h1>
+                    <h1>注册</h1>
                 </el-form-item>
                 <el-form-item prop="username">
                     <el-input :prefix-icon="User" placeholder="请输入用户名" v-model="registerData.username"></el-input>
                 </el-form-item>
+                <el-form-item prop="nickname">
+                    <el-input :prefix-icon="User"  placeholder="请输入昵称"
+                        v-model="registerData.nickname"></el-input>
+                </el-form-item>
+                <el-form-item prop="email">
+                    <el-input :prefix-icon="Message" placeholder="请输入邮箱" v-model="registerData.email"></el-input>
+                </el-form-item>
                 <el-form-item prop="password">
-                    <el-input name="password" :prefix-icon="Lock" type="password" placeholder="请输入密码" v-model="registerData.password"></el-input>
+                    <el-input :prefix-icon="Lock" type="password" placeholder="请输入密码"
+                      v-model="registerData.password"></el-input>
                 </el-form-item>
-                <el-form-item class="flex">
-                    <div class="flex">
-                        <el-checkbox>记住我</el-checkbox>
-                        <el-link type="primary" :underline="false" @click="forgetPassword">忘记密码？</el-link>
-                    </div>
-                </el-form-item>
-                <!-- 登录按钮 -->
+                <!-- 注册按钮 -->
                 <el-form-item>
-                    <el-button class="button" type="primary" auto-insert-space @click="login">登录</el-button>
+                    <el-button class="button"
+                    type="primary" 
+                    auto-insert-space @click="register()"
+                    >
+                        注册
+                    </el-button>
                 </el-form-item>
                 <el-form-item class="flex">
-                    <el-link type="info" :underline="false" @click="Register()">
-                        注册 →
+                    <el-link type="info" :underline="false" @click="Backlogin">
+                        ← 返回
                     </el-link>
                 </el-form-item>
             </el-form>
