@@ -49,7 +49,7 @@ const handleCommand = (command)=>{
             userInfoStore.removeInfo()
 
             //2.跳转到登录页面
-            router.push('/user/login')
+            router.push('/login')
             ElMessage({
                 type: 'success',
                 message: '退出登录成功',

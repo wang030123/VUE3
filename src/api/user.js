@@ -41,3 +41,11 @@ export const userAvatarUpdateService = (avatarUrl)=>{
 export const userPasswordUpdateService = (PasswordData)=>{
     return request.patch('/user/updatePwd',PasswordData,{headers:{'Content-Type': 'application/json'}})
 }
+
+export const userPasswordForgetService = (PasswordData)=>{
+    return request.patch('/user/forgetPassword',PasswordData,{headers:{'Content-Type': 'application/json'}})
+}
+
+export const userGetEmailCodeService = (params)=>{
+    return request.get('/user/getEmailCode',{params:params})
+}

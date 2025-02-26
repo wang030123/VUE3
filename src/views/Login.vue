@@ -7,20 +7,9 @@ const isRegister = ref(false)
 //定义数据模型
 const registerData = ref({
     username: '',
-    password: '',
-    rePassword: ''
+    password: ''
 })
 
-//校验密码的函数
-const checkRePassword = (rule, value, callback) => {
-    if (value === '') {
-        callback(new Error('请再次确认密码'))
-    } else if (value !== registerData.value.password) {
-        callback(new Error('请确保两次输入的密码一样'))
-    } else {
-        callback()
-    }
-}
 
 //定义表单校验规则
 const rules = {
@@ -32,24 +21,12 @@ const rules = {
         { required: true, message: '请输入密码', trigger: 'blur' },
         { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur' }
     ],
-    rePassword: [
-        { validator: checkRePassword, trigger: 'blur' }
-    ]
 }
 
 //调用后台接口,完成注册
 import { userRegisterService, userLoginService} from '@/api/user.js'
 const register = async () => {
-    //registerData是一个响应式对象,如果要获取值,需要.value
     let result = await userRegisterService(registerData.value);
-    /* if (result.code === 0) {
-        //成功了
-        alert(result.msg ? result.msg : '注册成功');
-    }else{
-        //失败了
-        alert('注册失败')
-    } */
-    //alert(result.msg ? result.msg : '注册成功');
     ElMessage.success(result.message ? result.message : '注册成功')
 }
 
@@ -63,25 +40,21 @@ const tokenStore = useTokenStore();
 const login =async ()=>{
     //调用接口,完成登录
    let result =  await userLoginService(registerData.value);
-   /* if(result.code===0){
-    alert(result.msg? result.msg : '登录成功')
-   }else{
-    alert('登录失败')
-   } */
-   //alert(result.msg? result.msg : '登录成功')
-   ElMessage.success(result.message ? result.message : '登录成功')
+   ElMessage.success(result.data.message ? result.data.message : '登录成功')
    //把得到的token存储到pinia中
    tokenStore.setToken(result.data)
    //跳转到首页 路由完成跳转
    router.push('/')
+}
+const forgetPassword = ()=>{
+   router.push('/user/forgetPassword')
 }
 
 //定义函数,清空数据模型的数据
 const clearRegisterData = ()=>{
     registerData.value={
         username:'',
-        password:'',
-        rePassword:''
+        password:''
     }
 }
 </script>
@@ -101,10 +74,6 @@ const clearRegisterData = ()=>{
                 <el-form-item prop="password">
                     <el-input :prefix-icon="Lock" type="password" placeholder="请输入密码"
                         v-model="registerData.password"></el-input>
-                </el-form-item>
-                <el-form-item prop="rePassword">
-                    <el-input :prefix-icon="Lock" type="password" placeholder="请输入再次密码"
-                        v-model="registerData.rePassword"></el-input>
                 </el-form-item>
                 <!-- 注册按钮 -->
                 <el-form-item>
@@ -132,7 +101,7 @@ const clearRegisterData = ()=>{
                 <el-form-item class="flex">
                     <div class="flex">
                         <el-checkbox>记住我</el-checkbox>
-                        <el-link type="primary" :underline="false">忘记密码？</el-link>
+                        <el-link type="primary" :underline="false" @click="forgetPassword">忘记密码？</el-link>
                     </div>
                 </el-form-item>
                 <!-- 登录按钮 -->

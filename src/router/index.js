@@ -9,10 +9,12 @@ import ArticleManageVue from '@/views/article/ArticleManage.vue'
 import UserAvatarVue from '@/views/user/UserAvatar.vue'
 import UserInfoVue from '@/views/user/UserInfo.vue'
 import UserResetPasswordVue from '@/views/user/UserResetPassword.vue'
+import UserForgetPasswordVue from '@/views/forgetPassword.vue'
 
 //定义路由关系
 const routes = [
-    { path: '/user/login', component: LoginVue },
+    { path: '/login', component: LoginVue },
+    { path: '/user/forgetPassword', component: UserForgetPasswordVue },
     {
         path: '/', component: LayoutVue,redirect:'/article/manage', children: [
             { path: '/article/category', component: ArticleCategoryVue },
