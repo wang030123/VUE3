@@ -11,7 +11,6 @@ import { articleCategoryListService, articleCategoryAddService, articleCategoryU
 const articleCategoryList = async () => {
     let result = await articleCategoryListService();
     categorys.value = result.data;
-
 }
 articleCategoryList();
 //控制添加分类弹窗

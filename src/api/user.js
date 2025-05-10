@@ -49,3 +49,9 @@ export const userPasswordForgetService = (PasswordData)=>{
 export const userGetEmailCodeService = (params)=>{
     return request.get('/user/getEmailCode',{params:params})
 }
+export const userListService = (params)=>{
+    return  request.get('/user/allUserInfo',{params:params})
+ }
+ export const userDeleteService = (id)=>{
+    return request.delete('/user/deleteUser?id='+id)
+}

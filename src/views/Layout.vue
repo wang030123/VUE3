@@ -90,6 +90,12 @@ const handleCommand = (command)=>{
                     </el-icon>
                     <span>文章管理</span>
                 </el-menu-item>
+                <el-menu-item index="/user/AllUser">
+                    <el-icon>
+                        <User />
+                    </el-icon>
+                    <span>用户管理</span>
+                </el-menu-item>
                 <el-sub-menu >
                     <template #title>
                         <el-icon>

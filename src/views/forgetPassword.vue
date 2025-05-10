@@ -1,5 +1,5 @@
 <script setup>
-import { User, Lock, Comment, Message,CreditCard,Right } from '@element-plus/icons-vue'
+import { User, Lock, Comment, Message, CreditCard, Right } from '@element-plus/icons-vue'
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 
@@ -18,8 +18,8 @@ const rules = {
         { required: true, message: '请输入用户名', trigger: 'blur' },
         { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur' }
     ],
-    email:[
-    {required:true,message:"请输入邮箱",trigger:"blur"}
+    email: [
+        { required: true, message: "请输入邮箱", trigger: "blur" }
     ],
     old_pwd: [
         { required: true, message: '请输入原密码', trigger: 'blur' },
@@ -58,33 +58,39 @@ const btnDisabled = ref(false)
 const second = ref(null)
 const timer = ref(null)
 const Countdown = computed(() => btnDisabled.value ? `重新获取 ( ${second.value} ) s` : '获取验证码')
-//获取验证码
-const handleClick = () => {
-    if (btnDisabled.value) {
-        return
-    }
-    getCode()
-}
 const getCode = () => {
-    let s = 60  //倒计时间
+    let s = 60;
     if (!timer.value) {
-        second.value = s
-        btnDisabled.value = true
+        second.value = s;
+        btnDisabled.value = true;
+
         timer.value = setInterval(() => {
-            if (second.value > 0 && second.value <= s) {
-                second.value--
+            if (second.value > 0) {
+                second.value--;
             } else {
-                btnDisabled.value = false
-                clearInterval(timer.value)
-                timer.value = null
+                btnDisabled.value = false;
+                clearInterval(timer.value);
+                timer.value = null;
             }
-        }, 1000)
+        }, 1000);
     }
 }
+const handleClick = async () => {
+    if (btnDisabled.value) return;
+
+    try {
+        // 先调用接口
+        await getemailCode();
+        // 接口成功后再启动倒计时
+        getCode();
+    } catch (error) {
+        ElMessage.error('验证码发送失败');
+    }
+}
+
 const getemailCode = async () => {
-    //调用接口,完成登录
-    let result = await userGetEmailCodeService(PasswordData.value);
-    ElMessage.success(result.message ? result.message : '获取验证码成功')
+    const result = await userGetEmailCodeService(PasswordData.value);
+    ElMessage.success(result.message || '验证码已发送');
 }
 </script>
 
@@ -105,19 +111,12 @@ const getemailCode = async () => {
                         v-model="PasswordData.email"></el-input>
                 </el-form-item>
                 <el-form-item prop="code">
-                    <el-input 
-                    name="code" 
-                    :prefix-icon="Comment"
-                    placeholder="请输入验证码" 
-                    v-model="PasswordData.code">
-                    <template #append
-                    :disable="btnDisabled" 
-                    @click="handleClick"
-                    >                   
-                    <el-button
-                    @click="getemailCode"/>
-                    {{Countdown}}
-                    </template>
+                    <el-input name="code" :prefix-icon="Comment" placeholder="请输入验证码" v-model="PasswordData.code">
+                        <template #append>
+                            <el-button class="custom-code-btn" :disabled="btnDisabled" @click="handleClick">
+                                {{ Countdown }}
+                            </el-button>
+                        </template>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="new_pwd">
@@ -173,6 +172,18 @@ const getemailCode = async () => {
             display: flex;
             justify-content: space-between;
         }
+    }
+
+    .custom-code-btn {
+        background-color: #409EFF !important;
+        color: white !important;
+        border-color: #409EFF !important;
+    }
+
+    /* 禁用状态下的样式 */
+    .custom-code-btn.is-disabled {
+        background-color: #a0cfff !important;
+        border-color: #a0cfff !important;
     }
 }
 </style>

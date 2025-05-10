@@ -11,7 +11,7 @@ import UserAvatarVue from '@/views/user/UserAvatar.vue'
 import UserInfoVue from '@/views/user/UserInfo.vue'
 import UserResetPasswordVue from '@/views/user/UserResetPassword.vue'
 import UserForgetPasswordVue from '@/views/forgetPassword.vue'
-
+import UserVue from '@/views/user/User.vue'
 
 //定义路由关系
 const routes = [
@@ -24,7 +24,8 @@ const routes = [
             { path: '/article/manage', component: ArticleManageVue },
             { path: '/user/info', component: UserInfoVue },
             { path: '/user/avatar', component: UserAvatarVue },
-            { path: '/user/resetPassword', component: UserResetPasswordVue }
+            { path: '/user/resetPassword', component: UserResetPasswordVue },
+            { path: '/user/AllUser', component: UserVue }
         ]
     }
 ]
