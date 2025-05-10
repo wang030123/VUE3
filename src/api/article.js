@@ -34,3 +34,10 @@ export const articleAddService = (articleData)=>{
     return request.post('/article',articleData);
 
 }
+export const articleDeleteService = (id)=>{
+    return request.delete('/article?id='+id)
+}
+
+export const articleUpdateService = (articleData)=>{
+    return  request.put('/article',articleData)
+ }

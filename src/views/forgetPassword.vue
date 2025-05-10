@@ -1,5 +1,5 @@
 <script setup>
-import { User, Lock, Comment, Message } from '@element-plus/icons-vue'
+import { User, Lock, Comment, Message,CreditCard,Right } from '@element-plus/icons-vue'
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 
@@ -17,6 +17,9 @@ const rules = {
     username: [
         { required: true, message: '请输入用户名', trigger: 'blur' },
         { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur' }
+    ],
+    email:[
+    {required:true,message:"请输入邮箱",trigger:"blur"}
     ],
     old_pwd: [
         { required: true, message: '请输入原密码', trigger: 'blur' },

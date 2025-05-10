@@ -8,73 +8,21 @@ import { ref } from 'vue'
 
 //文章分类数据模型
 const categorys = ref([
-    {
-        "id": 3,
-        "categoryName": "美食",
-        "categoryAlias": "my",
-        "createTime": "2023-09-02 12:06:59",
-        "updateTime": "2023-09-02 12:06:59"
-    },
-    {
-        "id": 4,
-        "categoryName": "娱乐",
-        "categoryAlias": "yl",
-        "createTime": "2023-09-02 12:08:16",
-        "updateTime": "2023-09-02 12:08:16"
-    },
-    {
-        "id": 5,
-        "categoryName": "军事",
-        "categoryAlias": "js",
-        "createTime": "2023-09-02 12:08:33",
-        "updateTime": "2023-09-02 12:08:33"
-    }
 ])
 
 //用户搜索时选中的分类id
 const categoryId = ref('')
 
-//用户搜索时选中的发布状态
-const state = ref('')
 
 //文章列表数据模型
 const articles = ref([
-    {
-        "id": 5,
-        "title": "陕西旅游攻略",
-        "content": "兵马俑,华清池,法门寺,华山...爱去哪去哪...",
-        "coverImg": "https://big-event-gwd.oss-cn-beijing.aliyuncs.com/9bf1cf5b-1420-4c1b-91ad-e0f4631cbed4.png",
-        "state": "草稿",
-        "categoryId": 2,
-        "createTime": "2023-09-03 11:55:30",
-        "updateTime": "2023-09-03 11:55:30"
-    },
-    {
-        "id": 5,
-        "title": "陕西旅游攻略",
-        "content": "兵马俑,华清池,法门寺,华山...爱去哪去哪...",
-        "coverImg": "https://big-event-gwd.oss-cn-beijing.aliyuncs.com/9bf1cf5b-1420-4c1b-91ad-e0f4631cbed4.png",
-        "state": "草稿",
-        "categoryId": 2,
-        "createTime": "2023-09-03 11:55:30",
-        "updateTime": "2023-09-03 11:55:30"
-    },
-    {
-        "id": 5,
-        "title": "陕西旅游攻略",
-        "content": "兵马俑,华清池,法门寺,华山...爱去哪去哪...",
-        "coverImg": "https://big-event-gwd.oss-cn-beijing.aliyuncs.com/9bf1cf5b-1420-4c1b-91ad-e0f4631cbed4.png",
-        "state": "草稿",
-        "categoryId": 2,
-        "createTime": "2023-09-03 11:55:30",
-        "updateTime": "2023-09-03 11:55:30"
-    },
 ])
-
+const state = ref([
+])
 //分页条数据模型
 const pageNum = ref(1)//当前页
 const total = ref(20)//总条数
-const pageSize = ref(3)//每页条数
+const pageSize = ref(5)//每页条数
 
 //当每页条数发生了变化，调用此函数
 const onSizeChange = (size) => {
@@ -89,7 +37,7 @@ const onCurrentChange = (num) => {
 
 
 //回显文章分类
-import { articleCategoryListService, articleListService,articleAddService } from '@/api/article.js'
+import { articleCategoryListService, articleListService,articleAddService,articleDeleteService,articleUpdateService } from '@/api/article.js'
 const articleCategoryList = async () => {
     let result = await articleCategoryListService();
 
@@ -132,6 +80,7 @@ import { Plus } from '@element-plus/icons-vue'
 const visibleDrawer = ref(false)
 //添加表单数据模型
 const articleModel = ref({
+    id:'',
     title: '',
     categoryId: '',
     coverImg: '',
@@ -167,6 +116,71 @@ const addArticle = async (clickState)=>{
     //刷新当前列表
     articleList()
 }
+
+const updateArticle = async (clickState)=>{
+    //把发布状态赋值给数据模型
+    articleModel.value.state = clickState;
+
+    //调用接口
+    let result = await articleUpdateService(articleModel.value);
+
+    ElMessage.success(result.msg? result.msg:'修改成功');
+
+    //让抽屉消失
+    visibleDrawer.value = false;
+
+    //刷新当前列表
+    articleList()
+}
+const title = ref('')
+const showArticle =  (row)=>{
+    visibleDrawer.value = true; 
+    title.value = '编辑文章';
+    articleModel.value.title= row.title;
+    articleModel.value.categoryId= row.categoryId;
+    articleModel.value.coverImg= row.coverImg;
+    articleModel.value.content= row.content;
+    articleModel.value.state= row.state
+    articleModel.value.id= row.id;
+}
+
+const clearData = () => {
+    articleModel.value.title = '';
+    articleModel.value.categoryId = '';
+    articleModel.value.coverImg = '';
+    articleModel.value.content = '<p> </p>';
+}
+import {ElMessageBox} from 'element-plus'
+const deleteArticle = (row) => {
+    //提示用户  确认框
+
+    ElMessageBox.confirm(
+        '你确认要删除该文章信息吗?',
+        '温馨提示',
+        {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    )
+        .then(async () => {
+            //调用接口
+            let result = await articleDeleteService(row.id);
+            ElMessage({
+                type: 'success',
+                message: '删除成功',
+            })
+            //刷新列表
+            articleList();
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '用户取消了删除',
+            })
+        })
+}
+
 </script>
 <template>
     <el-card class="page-container">
@@ -174,22 +188,22 @@ const addArticle = async (clickState)=>{
             <div class="header">
                 <span>文章管理</span>
                 <div class="extra">
-                    <el-button type="primary" @click="visibleDrawer = true">添加文章</el-button>
+                    <el-button type="primary" @click="visibleDrawer = true;title='添加文章';clearData()">添加文章</el-button>
                 </div>
             </div>
         </template>
         <!-- 搜索表单 -->
         <el-form inline>
-            <el-form-item label="文章分类：">
+            <el-form-item class="search" label="文章分类：">
                 <el-select placeholder="请选择" v-model="categoryId">
                     <el-option v-for="c in categorys" :key="c.id" :label="c.categoryName" :value="c.id">
                     </el-option>
                 </el-select>
             </el-form-item>
-
-            <el-form-item label="发布状态：">
+            <el-form-item class="search" label="发布状态：">
                 <el-select placeholder="请选择" v-model="state">
                     <el-option label="已发布" value="已发布"></el-option>
+                    <el-option label="已提交" value="已提交"></el-option>
                     <el-option label="草稿" value="草稿"></el-option>
                 </el-select>
             </el-form-item>
@@ -206,8 +220,8 @@ const addArticle = async (clickState)=>{
             <el-table-column label="状态" prop="state"></el-table-column>
             <el-table-column label="操作" width="100">
                 <template #default="{ row }">
-                    <el-button :icon="Edit" circle plain type="primary"></el-button>
-                    <el-button :icon="Delete" circle plain type="danger"></el-button>
+                    <el-button :icon="Edit"  circle plain type="primary" @click="showArticle(row)" ></el-button>
+                    <el-button :icon="Delete" circle plain type="danger"  @click="deleteArticle(row)" ></el-button>
                 </template>
             </el-table-column>
             <template #empty>
@@ -220,7 +234,7 @@ const addArticle = async (clickState)=>{
             @current-change="onCurrentChange" style="margin-top: 20px; justify-content: flex-end" />
 
         <!-- 抽屉 -->
-        <el-drawer v-model="visibleDrawer" title="添加文章" direction="rtl" size="50%">
+        <el-drawer v-model="visibleDrawer" :title="title" direction="rtl" size="50%">
             <!-- 添加文章表单 -->
             <el-form :model="articleModel" label-width="100px">
                 <el-form-item label="文章标题">
@@ -233,15 +247,6 @@ const addArticle = async (clickState)=>{
                     </el-select>
                 </el-form-item>
                 <el-form-item label="文章封面">
-
-                    <!-- 
-                        auto-upload:设置是否自动上传
-                        action:设置服务器接口路径
-                        name:设置上传的文件字段名
-                        headers:设置上传的请求头
-                        on-success:设置上传成功的回调函数
-                     -->
-                   
                     <el-upload class="avatar-uploader" :auto-upload="true" :show-file-list="false"
                     action="/api/upload"
                     name="file"
@@ -261,8 +266,8 @@ const addArticle = async (clickState)=>{
                     </div>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="addArticle('已发布')">发布</el-button>
-                    <el-button type="info" @click="addArticle('草稿')">草稿</el-button>
+                    <el-button type="primary" @click="title == '添加文章' ? addArticle('已提交') : updateArticle('已提交')">提交</el-button>
+                    <el-button type="info"  @click="title == '添加文章' ? addArticle('草稿') : updateArticle('草稿')">草稿</el-button>
                 </el-form-item>
             </el-form>
         </el-drawer>
@@ -274,6 +279,12 @@ const addArticle = async (clickState)=>{
     box-sizing: border-box;
 
     .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .search{
+        width: 300px;
         display: flex;
         align-items: center;
         justify-content: space-between;
