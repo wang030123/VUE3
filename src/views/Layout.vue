@@ -7,7 +7,8 @@ import {
     Crop,
     EditPen,
     SwitchButton,
-    CaretBottom
+    CaretBottom,
+    StarFilled
 } from '@element-plus/icons-vue'
 import avatar from '@/assets/default.png'
 
@@ -96,6 +97,12 @@ const handleCommand = (command)=>{
                     </el-icon>
                     <span>用户管理</span>
                 </el-menu-item>
+                <el-menu-item index="/article/mystar">
+                    <el-icon>
+                        <StarFilled />
+                    </el-icon>
+                    <span>我的收藏</span>
+                </el-menu-item>
                 <el-sub-menu >
                     <template #title>
                         <el-icon>
@@ -156,7 +163,7 @@ const handleCommand = (command)=>{
                 <router-view></router-view>
             </el-main>
             <!-- 底部区域 -->
-            <el-footer>大事件 ©2025 Created by 不知名程序员</el-footer>
+            <el-footer>论坛分享平台 ©2025 Created by 不知名程序员</el-footer>
         </el-container>
     </el-container>
 </template>

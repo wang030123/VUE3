@@ -1,9 +1,12 @@
 <script setup>
 import {
     Edit,
-    Delete
+    Delete,
+    Check,
+    Star
 } from '@element-plus/icons-vue'
-
+import  useUserInfoStore  from '@/stores/userInfo'
+const userInfoStore = useUserInfoStore()
 import { ref } from 'vue'
 
 //文章分类数据模型
@@ -143,6 +146,21 @@ const showArticle =  (row)=>{
     articleModel.value.state= row.state
     articleModel.value.id= row.id;
 }
+const SubmitArticle = async (row)=>{
+    articleModel.value.title= row.title;
+    articleModel.value.categoryId= row.categoryId;
+    articleModel.value.coverImg= row.coverImg;
+    articleModel.value.content= row.content;
+    articleModel.value.state= '已发布'
+    articleModel.value.id= row.id;
+
+
+    let result = await articleUpdateService(articleModel.value);
+
+    ElMessage.success(result.msg? result.msg:'发布成功');
+
+    articleList()
+}
 
 const clearData = () => {
     articleModel.value.title = '';
@@ -180,7 +198,17 @@ const deleteArticle = (row) => {
             })
         })
 }
+import { addStarService } from '@/api/star'
 
+const handleStar = async (id) => {
+    await addStarService({
+      userId: userInfoStore.info.id,
+      articleId: id
+    })
+    ElMessage.success('收藏成功')
+    // 可选：刷新本地数据
+    row.isStarred = true 
+}
 </script>
 <template>
     <el-card class="page-container">
@@ -218,10 +246,20 @@ const deleteArticle = (row) => {
             <el-table-column label="分类" prop="categoryName"></el-table-column>
             <el-table-column label="发表时间" prop="createTime"> </el-table-column>
             <el-table-column label="状态" prop="state"></el-table-column>
-            <el-table-column label="操作" width="100">
+            <el-table-column label="操作" width="200">
                 <template #default="{ row }">
-                    <el-button :icon="Edit"  circle plain type="primary" @click="showArticle(row)" ></el-button>
-                    <el-button :icon="Delete" circle plain type="danger"  @click="deleteArticle(row)" ></el-button>
+                    <el-button 
+                    v-if="row.state === '草稿' || row.state === '已提交'"
+                    :icon="Edit"  circle plain type="primary" @click="showArticle(row)" ></el-button>
+                    <el-button 
+                     v-if="row.state === '草稿'"
+                    :icon="Delete" circle plain type="danger"  @click="deleteArticle(row)" ></el-button>
+                    <el-button 
+                    v-if="row.state === '已提交'"
+                    :icon="Check" circle plain type="success"  @click="SubmitArticle(row)" ></el-button>
+                    <el-button
+                    v-if="row.state === '已发布'&& !row.isStarred"
+                    :icon="Star" circle plain type="warning"  @click="handleStar(row.id)" ></el-button>
                 </template>
             </el-table-column>
             <template #empty>
